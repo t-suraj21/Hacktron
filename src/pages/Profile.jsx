@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,21 +14,20 @@ const Profile = () => {
       return;
     }
 
-    // Fetch user data from backend using token
     const fetchUserProfile = async () => {
       try {
         const response = await fetch('http://localhost:3000/api/auth/profile', {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`, // Send token in header
+            'Authorization': `Bearer ${token}`,
           },
         });
 
         const data = await response.json();
 
         if (response.ok) {
-          setUser(data.user); // Assuming your backend returns { user: {...} }
+          setUser(data.user);
         } else {
           console.error(data.message || 'Failed to fetch profile');
           navigate('/login');
@@ -35,23 +35,60 @@ const Profile = () => {
       } catch (error) {
         console.error('Error fetching profile:', error);
         navigate('/login');
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchUserProfile();
   }, [navigate]);
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl font-semibold text-blue-600">Loading Profile...</div>
+      </div>
+    );
+  }
+
   if (!user) {
-    return <div className="p-6 text-center">Loading profile...</div>;
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <div className="text-xl font-semibold text-red-500">Failed to load profile.</div>
+      </div>
+    );
   }
 
   return (
-    <div className="max-w-lg mx-auto mt-10 bg-white rounded-lg shadow-md p-8">
-      <h2 className="text-3xl font-bold mb-6 text-center text-blue-600">Your Profile</h2>
-      <div className="space-y-4 text-gray-700">
-        <p><strong>Name:</strong> {user.name}</p>
-        <p><strong>Email:</strong> {user.email}</p>
-        {/* Add more fields if your user has like phone, address etc */}
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-100 to-purple-200 p-6">
+      <div className="bg-white rounded-2xl shadow-2xl p-10 w-full max-w-md">
+        <h1 className="text-3xl font-bold text-center mb-6 text-blue-700">Your Profile</h1>
+        <div className="space-y-4">
+          <div className="p-4 border rounded-lg hover:shadow-lg transition">
+            <h2 className="text-gray-600 text-sm">Name</h2>
+            <p className="text-lg font-semibold text-gray-800">{user.name}</p>
+          </div>
+          <div className="p-4 border rounded-lg hover:shadow-lg transition">
+            <h2 className="text-gray-600 text-sm">Email</h2>
+            <p className="text-lg font-semibold text-gray-800">{user.email}</p>
+          </div>
+          <div className="p-4 border rounded-lg hover:shadow-lg transition">
+            <h2 className="text-gray-600 text-sm">Emergency Contact</h2>
+            <p className="text-lg font-semibold text-gray-800">{user.emergencyContact}</p>
+          </div>
+        </div>
+
+        <div className="mt-8 flex justify-center">
+          <button
+            onClick={() => {
+              localStorage.removeItem('token');
+              navigate('/login');
+            }}
+            className="px-6 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </div>
   );
