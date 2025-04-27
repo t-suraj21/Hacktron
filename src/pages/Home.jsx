@@ -39,19 +39,6 @@ const EmergencyBanner = () => (
 const Home = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-pink-100 via-purple-100 to-indigo-100 text-purple-900">
-      {/* Header */}
-      <header className="py-4 px-6 flex justify-between items-center bg-white bg-opacity-70 backdrop-blur-sm">
-        <div className="flex items-center">
-          <Shield className="mr-2 text-pink-600" size={28} />
-          <span className="text-2xl font-bold text-purple-800">ShieldHer</span>
-        </div>
-        <div className="flex space-x-4">
-          <Link to="/about" className="text-purple-700 hover:text-pink-600 transition">About</Link>
-          <Link to="/resources" className="text-purple-700 hover:text-pink-600 transition">Resources</Link>
-          <Link to="/contact" className="text-purple-700 hover:text-pink-600 transition">Contact</Link>
-        </div>
-      </header>
-
       {/* Hero Section */}
       <div className="flex flex-col items-center justify-center py-16 px-4 text-center">
         <motion.div
