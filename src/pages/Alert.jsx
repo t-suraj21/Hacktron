@@ -32,6 +32,17 @@ const Alert = () => {
     localStorage.setItem('quickDialNumbers', JSON.stringify(updatedNumbers)); // Save to localStorage
   };
 
+  // Function to get current location
+  const getLocation = () => {
+    return new Promise((resolve, reject) => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(resolve, reject);
+      } else {
+        reject('Geolocation is not supported by this browser.');
+      }
+    });
+  };
+
   const handleSendCall = async (targetNumber = phoneNumber) => {
     if (!targetNumber) {
       setMessage('Phone number is required!');
@@ -49,8 +60,17 @@ const Alert = () => {
     setMessage('');
 
     try {
+      // Get the location of the user
+      const position = await getLocation();
+      const { latitude, longitude } = position.coords;
+
+      // Prepare the message with the location
+      const locationMessage = `Help! I'm at latitude: ${latitude}, longitude: ${longitude}. Please assist!`;
+
+      // Send the call request along with the location message
       const response = await axios.post('http://localhost:3000/api/call', {
         to: targetNumber,
+        message: locationMessage, // Send message with location
       });
 
       if (response.data.success) {
